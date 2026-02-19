@@ -3,7 +3,8 @@
     "allow": [
       "Bash(docker run --rm --entrypoint bash webpage-recorder -c \"pulseaudio --start --exit-idle-time=-1 2>&1; sleep 1; ls /usr/lib/*/pulseaudio/modules/module-null-sink* 2>&1 || echo ''module not found''; pactl list modules short 2>&1 | head -20; pactl load-module module-null-sink sink_name=test 2>&1\")",
       "Bash(docker run:*)",
-      "Bash(docker-compose run:*)"
+      "Bash(docker-compose run:*)",
+      "Bash(node --check:*)"
     ]
   }
 }

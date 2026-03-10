@@ -1,17 +1,22 @@
 #!/usr/bin/env bash
 
 # Wrapper script for webpage-video-recorder
-# Automatically uses Docker on macOS (where Xvfb/PulseAudio aren't available)
-# On Linux, runs directly with Node.js
+# Automatically uses Docker on macOS and WSL (where Xvfb/PulseAudio aren't available)
+# On native Linux, runs directly with Node.js
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 IMAGE_NAME="webpage-recorder"
 
-# Detect platform
+# Detect if running inside WSL
+is_wsl() {
+  grep -qEi "(microsoft|wsl)" /proc/version 2>/dev/null
+}
+
+# Detect platform — use Docker on macOS or WSL
 needs_docker() {
-  [[ "$(uname -s)" != "Linux" ]]
+  [[ "$(uname -s)" != "Linux" ]] || is_wsl
 }
 
 # Build Docker image if it doesn't exist or Dockerfile is newer
@@ -59,7 +64,11 @@ rewrite_args() {
 }
 
 if needs_docker; then
-  echo "[record.sh] macOS detected — running via Docker"
+  if is_wsl; then
+    echo "[record.sh] WSL detected — running via Docker"
+  else
+    echo "[record.sh] macOS detected — running via Docker"
+  fi
   ensure_image
 
   # Ensure recordings directory exists on host

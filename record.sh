@@ -9,9 +9,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 IMAGE_NAME="webpage-recorder"
 
-# Detect platform
+# Detect platform — use Docker on non-Linux or when dependencies are missing
 needs_docker() {
-  [[ "$(uname -s)" != "Linux" ]]
+  [[ "$(uname -s)" != "Linux" ]] && return 0
+  # On Linux, check for required native dependencies
+  command -v Xvfb >/dev/null 2>&1 && command -v ffmpeg >/dev/null 2>&1 && command -v pulseaudio >/dev/null 2>&1 && return 1
+  return 0
 }
 
 # Build Docker image if it doesn't exist or Dockerfile is newer
@@ -59,7 +62,7 @@ rewrite_args() {
 }
 
 if needs_docker; then
-  echo "[record.sh] macOS detected — running via Docker"
+  echo "[record.sh] Missing native dependencies — running via Docker"
   ensure_image
 
   # Ensure recordings directory exists on host

@@ -6,7 +6,7 @@ FROM node:20-slim
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
     DISPLAY=:99 \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Install system dependencies
